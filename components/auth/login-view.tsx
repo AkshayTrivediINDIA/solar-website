@@ -35,10 +35,12 @@ function GoogleIcon() {
 export function LoginView({
   nextUrl,
   configured,
+  googleEnabled,
   hadAuthError,
 }: {
   nextUrl: string;
   configured: boolean;
+  googleEnabled: boolean;
   hadAuthError: boolean;
 }) {
   const [email, setEmail] = useState("");
@@ -115,11 +117,17 @@ export function LoginView({
           variant="outline"
           className="h-10 w-full gap-2"
           onClick={signInWithGoogle}
-          disabled={!configured || loading}
+          disabled={!configured || !googleEnabled || loading}
         >
           <GoogleIcon />
           Continue with Google
         </Button>
+
+        {configured && !googleEnabled ? (
+          <p className="rounded-lg bg-amber-50 px-3 py-2 text-center text-xs text-amber-800">
+            Google login abhi set up nahi hai — filhal email magic link se sign in karo.
+          </p>
+        ) : null}
 
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
           <span className="h-px flex-1 bg-border" />

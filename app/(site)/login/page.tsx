@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { LoginView } from "@/components/auth/login-view";
 import { getCurrentUser } from "@/lib/supabase/server";
-import { isSupabaseConfigured } from "@/lib/supabase";
+import { getEnabledAuthProviders, isSupabaseConfigured } from "@/lib/supabase";
 
 export const metadata = {
   title: "Sign in",
@@ -20,11 +20,14 @@ export default async function LoginPage({
   const user = await getCurrentUser();
   if (user) redirect(nextUrl);
 
+  const providers = await getEnabledAuthProviders();
+
   return (
     <div className="mx-auto w-full max-w-md px-4 py-14">
       <LoginView
         nextUrl={nextUrl}
         configured={isSupabaseConfigured()}
+        googleEnabled={providers?.google === true}
         hadAuthError={error === "auth"}
       />
     </div>

@@ -34,3 +34,25 @@ export function getAdminClient(): SupabaseClient | null {
 export function isSupabaseConfigured() {
   return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 }
+
+/**
+ * Returns the map of external auth providers enabled on the Supabase project
+ * (e.g. `{ email: true, google: false, ... }`), or `null` if unavailable.
+ */
+export async function getEnabledAuthProviders(): Promise<Record<string, boolean> | null> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) return null;
+
+  try {
+    const res = await fetch(`${url}/auth/v1/settings`, {
+      headers: { apikey: key },
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { external?: Record<string, boolean> };
+    return json.external ?? null;
+  } catch {
+    return null;
+  }
+}
